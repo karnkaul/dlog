@@ -106,10 +106,10 @@ void dl::log(level level, std::string_view fmt, Args&&... args) {
 namespace dl::config {
 template <typename... Args>
 struct func_list<Args...>::token {
-	token() = default;
-	token(func_list& flist, std::uint64_t id);
-	token(token&&);
-	token& operator=(token&&);
+	constexpr token() = default;
+	constexpr token(func_list& flist, std::uint64_t id) noexcept;
+	constexpr token(token&&) noexcept;
+	constexpr token& operator=(token&&) noexcept;
 	~token();
 
   private:
@@ -118,17 +118,17 @@ struct func_list<Args...>::token {
 };
 
 template <typename... Args>
-func_list<Args...>::token::token(func_list& flist, std::uint64_t id) : p_flist(&flist), id(id) {
+constexpr func_list<Args...>::token::token(func_list& flist, std::uint64_t id) noexcept : p_flist(&flist), id(id) {
 }
 
 template <typename... Args>
-func_list<Args...>::token::token(token&& rhs) : p_flist(rhs.p_flist), id(rhs.id) {
+constexpr func_list<Args...>::token::token(token&& rhs) noexcept : p_flist(rhs.p_flist), id(rhs.id) {
 	rhs.p_flist = nullptr;
 	rhs.id = 0;
 }
 
 template <typename... Args>
-typename func_list<Args...>::token& func_list<Args...>::token::operator=(token&& rhs) {
+constexpr typename func_list<Args...>::token& func_list<Args...>::token::operator=(token&& rhs) noexcept {
 	if (&rhs != this) {
 		if (id > 0 && p_flist) {
 			p_flist->remove(id);

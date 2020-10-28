@@ -44,7 +44,7 @@ std::FILE* fout(level level) {
 std::string format(level level, std::string_view text) {
 	using namespace fmt::literals;
 	using clock = std::chrono::system_clock;
-	char const pre = g_log_levels.at(std::size_t(level)).at(0);
+	char const pre = g_log_levels[std::size_t(level)][0];
 	std::string const ts = sub("timestamp") ? fmt::format("{:%H:%M:%S}", fmt::localtime(clock::to_time_t(clock::now()))) : std::string();
 	std::uint64_t const id = sub("thread") ? thread_id() : 0;
 	return fmt::format(g_meta_format, "level"_a = pre, "thread"_a = id, "message"_a = text, "timestamp"_a = ts);
