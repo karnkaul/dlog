@@ -31,6 +31,7 @@ file(GLOB_RECURSE INCLUDES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/includ
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${INCLUDES} ${SOURCES})
 
 add_library(dlog ${INCLUDES} ${SOURCES})
+add_library(dlog::dlog ALIAS dlog)
 target_compile_definitions(dlog PUBLIC $<$<CONFIG:Debug>:DLOG_DEBUG>)
 target_compile_features(dlog PUBLIC cxx_std_17)
 target_include_directories(dlog PUBLIC include)

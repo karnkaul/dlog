@@ -25,7 +25,7 @@ This is a "dumb simple" logging library that uses [fmt](https://github.com/fmtli
 **Steps**
 
 1. Clone repo to appropriate subdirectory, say `dumb_log`
-1. Add library to project via: `add_subdirectory(dumb_log)` and `target_link_libraries(foo dlog)`
+1. Add library to project via: `add_subdirectory(dumb_log)` and `target_link_libraries(foo dlog::dlog)`
 1. Use via: `#include <dumb_log/log.hpp>`
 1. Use only fmt via: `#include <fmt/format.h>`
 
