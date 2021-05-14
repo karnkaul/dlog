@@ -21,16 +21,12 @@ std::uint32_t thread_id() {
 	static std::unordered_map<std::thread::id, std::uint32_t> thread_ids;
 	auto lock = std::scoped_lock<std::mutex>(g_mutex);
 	auto const id = std::this_thread::get_id();
-	if (auto search = thread_ids.find(id); search != thread_ids.end()) {
-		return search->second;
-	}
+	if (auto search = thread_ids.find(id); search != thread_ids.end()) { return search->second; }
 	auto [ret, b_result] = thread_ids.insert({id, next_id++});
 	return b_result ? ret->second : 0U;
 }
 
-bool sub(std::string_view str) {
-	return g_meta_format.find(str) < g_meta_format.size();
-}
+bool sub(std::string_view str) { return g_meta_format.find(str) < g_meta_format.size(); }
 
 std::FILE* fout(level level) {
 	auto lock = std::scoped_lock<std::mutex>(g_mutex);

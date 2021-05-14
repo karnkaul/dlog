@@ -118,8 +118,7 @@ struct func_list<Args...>::token {
 };
 
 template <typename... Args>
-constexpr func_list<Args...>::token::token(func_list& flist, std::uint64_t id) noexcept : p_flist(&flist), id(id) {
-}
+constexpr func_list<Args...>::token::token(func_list& flist, std::uint64_t id) noexcept : p_flist(&flist), id(id) {}
 
 template <typename... Args>
 constexpr func_list<Args...>::token::token(token&& rhs) noexcept : p_flist(rhs.p_flist), id(rhs.id) {
@@ -130,9 +129,7 @@ constexpr func_list<Args...>::token::token(token&& rhs) noexcept : p_flist(rhs.p
 template <typename... Args>
 constexpr typename func_list<Args...>::token& func_list<Args...>::token::operator=(token&& rhs) noexcept {
 	if (&rhs != this) {
-		if (id > 0 && p_flist) {
-			p_flist->remove(id);
-		}
+		if (id > 0 && p_flist) { p_flist->remove(id); }
 		id = rhs.id;
 		p_flist = rhs.p_flist;
 		rhs.p_flist = nullptr;
@@ -143,9 +140,7 @@ constexpr typename func_list<Args...>::token& func_list<Args...>::token::operato
 
 template <typename... Args>
 func_list<Args...>::token::~token() {
-	if (id > 0 && p_flist) {
-		p_flist->remove(id);
-	}
+	if (id > 0 && p_flist) { p_flist->remove(id); }
 }
 
 template <typename... Args>
@@ -166,8 +161,6 @@ void func_list<Args...>::remove(std::uint64_t id) noexcept {
 
 template <typename... Args>
 void func_list<Args...>::operator()(Args... args) const {
-	for (auto [_, f] : m_entries) {
-		f(args...);
-	}
+	for (auto [_, f] : m_entries) { f(args...); }
 }
 } // namespace dl::config
