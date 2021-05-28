@@ -19,8 +19,6 @@ endif()
 
 add_subdirectory(ext/fmt)
 
-# -fPIC for fmt
-set_property(TARGET fmt PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_compile_features(fmt PRIVATE cxx_std_17)
 if(MSVC_RUNTIME AND NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
 	target_compile_definitions(fmt PUBLIC FMT_EXCEPTIONS=0)
@@ -38,9 +36,6 @@ target_include_directories(dlog PUBLIC include)
 target_include_directories(dlog SYSTEM PUBLIC ext/fmt/include)
 target_link_libraries(dlog PUBLIC fmt)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	target_compile_options(dlog PRIVATE -fPIC)
-endif()
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 	target_compile_options(dlog PRIVATE /MP)
 endif()
