@@ -4,6 +4,7 @@
 #include <thread>
 #include <unordered_map>
 #include <fmt/chrono.h>
+#include <dumb_log/config.hpp>
 #include <dumb_log/log.hpp>
 
 #if defined(_MSC_VER)
@@ -47,14 +48,16 @@ std::string format(level level, std::string_view text) {
 }
 
 void log_impl(level level, std::string_view text) {
-	if (auto file = fout(level)) {
-		auto str = format(level, text);
-		g_on_log(str, level);
-		str += "\n";
-		std::fprintf(file, "%s", str.data());
+	if (level >= config::g_min_level) {
+		if (auto file = fout(level)) {
+			auto str = format(level, text);
+			g_on_log(str, level);
+			str += "\n";
+			std::fprintf(file, "%s", str.data());
 #if defined(_MSC_VER)
-		OutputDebugStringA(str.data());
+			OutputDebugStringA(str.data());
 #endif
+		}
 	}
 }
 } // namespace dl
