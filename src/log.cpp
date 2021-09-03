@@ -60,4 +60,6 @@ void log_impl(level level, std::string_view text) {
 		}
 	}
 }
+
+std::uint32_t config::log_thread_id() { return thread_id(); }
 } // namespace dl

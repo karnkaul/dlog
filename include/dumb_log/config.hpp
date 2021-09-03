@@ -73,6 +73,10 @@ inline std::string_view g_meta_format = "[{level}] [T{thread}] {message} [{times
 /// \brief Registerable callback list for each log message
 ///
 inline on_log g_on_log;
+///
+/// \brief ID for this thread used in logging
+///
+std::uint32_t log_thread_id();
 
 // impl
 
