@@ -39,16 +39,17 @@ class func_list final {
 	///
 	/// \brief Token representing registration (registering func_list object must outlive all tokens)
 	///
-	struct token;
+	struct handle;
 
 	///
 	/// \brief Register a new function; discard token to unregister
 	///
-	[[nodiscard]] token add(func f);
+	[[nodiscard]] handle add(func f);
 	///
 	/// \brief Invoke all registered functions
 	///
-	void operator()(Args... args) const;
+	template <typename... T>
+	void operator()(T&&... args) const;
 
   private:
 	void remove(std::uint64_t id) noexcept;
@@ -57,7 +58,7 @@ class func_list final {
 	std::vector<entry> m_entries;
 	std::uint64_t m_next = 0;
 
-	friend struct token;
+	friend struct handle;
 };
 
 using on_log = func_list<std::string_view, level>;
@@ -81,50 +82,37 @@ std::uint32_t log_thread_id();
 // impl
 
 template <typename... Args>
-struct func_list<Args...>::token {
-	constexpr token() = default;
-	constexpr token(func_list& flist, std::uint64_t id) noexcept;
-	constexpr token(token&&) noexcept;
-	constexpr token& operator=(token&&) noexcept;
-	~token();
+struct func_list<Args...>::handle {
+	constexpr handle() = default;
+	constexpr handle(func_list& flist, std::uint64_t id) noexcept : flist(&flist), id(id) {}
+	constexpr handle(handle&& rhs) noexcept { exchg(*this, rhs); }
+	constexpr handle& operator=(handle rhs) noexcept { return (exchg(*this, rhs), *this); }
+	~handle() noexcept;
 
   private:
-	func_list* p_flist = nullptr;
+	constexpr void exchg(handle& lhs, handle& rhs) noexcept;
+
+	func_list* flist = nullptr;
 	std::uint64_t id = 0;
 };
 
 template <typename... Args>
-constexpr func_list<Args...>::token::token(func_list& flist, std::uint64_t id) noexcept : p_flist(&flist), id(id) {}
-
-template <typename... Args>
-constexpr func_list<Args...>::token::token(token&& rhs) noexcept : p_flist(rhs.p_flist), id(rhs.id) {
-	rhs.p_flist = nullptr;
-	rhs.id = 0;
+constexpr void func_list<Args...>::handle::exchg(handle& lhs, handle& rhs) noexcept {
+	std::swap(lhs.id, rhs.id);
+	std::swap(lhs.flist, rhs.flist);
 }
 
 template <typename... Args>
-constexpr typename func_list<Args...>::token& func_list<Args...>::token::operator=(token&& rhs) noexcept {
-	if (&rhs != this) {
-		if (id > 0 && p_flist) { p_flist->remove(id); }
-		id = rhs.id;
-		p_flist = rhs.p_flist;
-		rhs.p_flist = nullptr;
-		rhs.id = 0;
-	}
-	return *this;
+func_list<Args...>::handle::~handle() noexcept {
+	if (id > 0 && flist) { flist->remove(id); }
 }
 
 template <typename... Args>
-func_list<Args...>::token::~token() {
-	if (id > 0 && p_flist) { p_flist->remove(id); }
-}
-
-template <typename... Args>
-typename func_list<Args...>::token func_list<Args...>::add(func f) {
+typename func_list<Args...>::handle func_list<Args...>::add(func f) {
 	if (f) {
 		auto const id = ++m_next;
 		m_entries.push_back({id, f});
-		return token(*this, id);
+		return handle(*this, id);
 	}
 	return {};
 }
@@ -136,7 +124,8 @@ void func_list<Args...>::remove(std::uint64_t id) noexcept {
 }
 
 template <typename... Args>
-void func_list<Args...>::operator()(Args... args) const {
-	for (auto [_, f] : m_entries) { f(args...); }
+template <typename... T>
+void func_list<Args...>::operator()(T&&... args) const {
+	for (auto [_, f] : m_entries) { f(std::forward<T>(args)...); }
 }
 } // namespace dl::config
