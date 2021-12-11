@@ -31,7 +31,13 @@ target_include_directories(${PROJECT_NAME} SYSTEM
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 target_link_libraries(${PROJECT_NAME} PUBLIC fmt)
-add_subdirectory(include/dumb_log)
+target_sources(${PROJECT_NAME} PRIVATE
+  include/dumb_log/channel_flags.hpp
+  include/dumb_log/dumb_log.hpp
+  include/dumb_log/file_logger.hpp
+  include/dumb_log/level.hpp
+  include/dumb_log/pipe.hpp
+)
 add_subdirectory(src)
 get_target_property(sources ${PROJECT_NAME} SOURCES)
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${sources})
