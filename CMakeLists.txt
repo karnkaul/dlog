@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.14)
 set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
 
 project(dlog)
@@ -19,22 +19,22 @@ endif()
 
 add_subdirectory(ext/fmt)
 
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.?pp")
-file(GLOB_RECURSE INCLUDES CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.?pp")
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${INCLUDES} ${SOURCES})
-
-add_library(dlog ${INCLUDES} ${SOURCES})
-add_library(dlog::dlog ALIAS dlog)
-target_compile_definitions(dlog PUBLIC $<$<CONFIG:Debug>:DLOG_DEBUG>)
-target_compile_features(dlog PUBLIC cxx_std_17)
-target_include_directories(dlog SYSTEM
+add_library(${PROJECT_NAME})
+add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
+target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:DLOG_DEBUG>)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
+target_include_directories(${PROJECT_NAME} SYSTEM
   INTERFACE
     include
   PUBLIC
     ext/fmt/include
 )
-target_include_directories(dlog PRIVATE include)
-target_link_libraries(dlog PUBLIC fmt)
+target_include_directories(${PROJECT_NAME} PRIVATE include)
+target_link_libraries(${PROJECT_NAME} PUBLIC fmt)
+add_subdirectory(include/dumb_log)
+add_subdirectory(src)
+get_target_property(sources ${PROJECT_NAME} SOURCES)
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${sources})
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   target_compile_options(dlog PRIVATE /MP)

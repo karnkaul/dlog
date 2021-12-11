@@ -58,7 +58,7 @@ void dlog::log(level lvl, std::string_view text, channel ch) {
 		}
 		std::fprintf(lvl == level::error ? stderr : stdout, "%s\n", line.data());
 #if defined(_MSC_VER)
-		OutputDebugStringA(fmt::format("{}\n", text).data());
+		if (IsDebuggerPresent()) { OutputDebugStringA(fmt::format("{}\n", text).data()); }
 #endif
 	}
 }
