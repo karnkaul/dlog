@@ -65,7 +65,7 @@ void log(level const lvl, std::string_view const fmt, Args const&... args) {
 
 template <typename... Args>
 void log(level const lvl, channel const ch, std::string_view const fmt, Args const&... args) {
-	if (lvl >= min_level() && (ch == 0x0 || (ch & channels().bits) != 0x0)) { log(lvl, fmt::format(fmt, args...)); }
+	if (lvl >= min_level() && (ch == 0x0 || (ch & channels().bits) != 0x0)) { log(lvl, fmt::format(fmt::runtime(fmt), args...)); }
 }
 
 template <typename... Args>
