@@ -1,6 +1,6 @@
 # Dumb Log
 
-[![Build status](https://ci.appveyor.com/api/projects/status/v1b9ri4dtgjtpn2u?svg=true)](https://ci.appveyor.com/project/karnkaul/dlog)
+[![Build Status](https://github.com/karnkaul/dlog/actions/workflows/ci.yml/badge.svg)](https://github.com/karnkaul/dlog/actions/workflows/ci.yml)
 
 This is a "dumb simple" logging library that uses [fmt](https://github.com/fmtlib/fmt).
 
@@ -25,7 +25,7 @@ This is a "dumb simple" logging library that uses [fmt](https://github.com/fmtli
 
 ### Requirements
 
-- CMake
+- CMake 3.14+
 - C++17 compiler (and stdlib)
 
 ### Steps
