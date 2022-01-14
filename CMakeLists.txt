@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "")
 
 set(project_name dlog)
-set(${project_name}_version 1.0.0)
+set(${project_name}_version 1.0.1)
 set(cxx_standard cxx_std_17)
 
 project(${project_name} VERSION ${${project_name}_version})
@@ -77,5 +77,17 @@ if(DLOG_INSTALL)
   FetchContent_GetProperties(cmake-utils)
 
   include("${cmake-utils_SOURCE_DIR}/cmake-utils.cmake")
-  install_and_export_target(TARGET ${PROJECT_NAME})
+  install(TARGETS ${PROJECT_NAME} fmt EXPORT ${PROJECT_NAME}-targets)
+  install(EXPORT ${PROJECT_NAME}-targets
+    FILE ${PROJECT_NAME}-targets.cmake
+    NAMESPACE ${PROJECT_NAME}::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+  )
+  install(DIRECTORY include/ ext/fmt/include/
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+    FILES_MATCHING PATTERN "*.h*"
+  )
+  install_package_config(PACKAGE ${PROJECT_NAME})
+  install_package_version(PACKAGE ${PROJECT_NAME} VERSION ${${PROJECT_NAME}_version})
+  export_package_to_build_tree(PACKAGE ${PROJECT_NAME})
 endif()
