@@ -6,23 +6,27 @@ set(${project_name}_version 1.0.1)
 set(cxx_standard cxx_std_17)
 
 project(${project_name} VERSION ${${project_name}_version})
-set(is_root_project OFF)	# indicate if this is the top-level project
+set(is_root_project OFF) # indicate if this is the top-level project
+
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
   set(is_root_project ON)
   message(STATUS "${PROJECT_NAME} is top level")
 endif()
 
 # options
-option(DLOG_INSTALL "Install djson" ${is_root_project})
+option(DLOG_OUTPUT_DEBUG_STRING "Convert to wide-char and call OutputDebugString if debugger present (MSVC only)" ON)
+option(DLOG_INSTALL "Install dlog" ${is_root_project})
 
 if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
   find_package(Git QUIET)
-    if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
+
+  if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     message(STATUS "Updating git submodules...")
     execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
       RESULT_VARIABLE UPDATE_SUBMODULES_RESULT
     )
+
     if(NOT UPDATE_SUBMODULES_RESULT EQUAL "0")
       message(FATAL_ERROR "git submodule update failed!")
     endif()
@@ -34,14 +38,14 @@ add_subdirectory(ext/fmt)
 
 add_library(${PROJECT_NAME})
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:DLOG_DEBUG>)
+target_compile_definitions(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:DLOG_DEBUG> $<$<BOOL:${DLOG_OUTPUT_DEBUG_STRING}>:DLOG_OUTPUT_DEBUG_STRING>)
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 target_include_directories(${PROJECT_NAME} SYSTEM
   INTERFACE
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
-    "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>"
   PUBLIC
-    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext/fmt/include>"
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext/fmt/include>"
 )
 target_include_directories(${PROJECT_NAME} PRIVATE include)
 target_link_libraries(${PROJECT_NAME} PUBLIC fmt)
